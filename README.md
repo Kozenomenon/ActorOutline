@@ -1,7 +1,7 @@
 # ActorOutline
 Ark Survival Evolved Mod Assets for adding a custom stencil outline to a target actor. Such as a dino.
 
-##Assets
+## Assets
 - **Buff_ActorOutline**
  - Player buff that enables/disables the stencil.
 - **PP_StencilOutlineMaterial**
@@ -9,7 +9,7 @@ Ark Survival Evolved Mod Assets for adding a custom stencil outline to a target 
 - **PP_StencilOutlineMaterial_MIC**
  - Material instance referenced by the buff (and your PGD), edit parameters here. 
  
-##Setup
+## Setup
 1. Download this source
 2. [Unblock](https://lmgtfy.com/?q=unblock+windows+file) the .asset files in Windows File Explorer
 3. Place assets in your mod folder *(best if ADK is closed when you do this)*

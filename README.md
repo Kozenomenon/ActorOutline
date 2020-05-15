@@ -15,5 +15,5 @@ Ark Survival Evolved Mod Assets for adding a custom stencil outline to a target 
 3. Place assets in your mod folder *(best if ADK is closed when you do this)*
 4. Open your mod PGD and add 'PP_StencilOutlineMaterial_MIC' to the 'Additional Buff Post Process Effects' array 
 5. Implement the means within your mod to 'Static Add Buff' on the Player referencing the 'Buff_ActorOutline' 
-    *The desired stencil target needs to be set as 'Damage Causer' when you do this.*
+   - *The desired stencil target needs to be set as 'Damage Causer' when you do this.*
 6. Deactivate the buff to remove the stencil from display. 

@@ -16,6 +16,7 @@ Ark Survival Evolved Mod Assets for adding a custom stencil outline to a target 
   - *Player buff that enables/disables the stencil.*
   - *Setup to stencil whatever the player is looking at.*
   - *Changed this from what the example did before, left old logic disconnected in BuffClientTick.* 
+  - *Now can use any color - thanks Legendarsreign & HexenLord* 
 - **PP_StencilOutlineMaterial**
   - *Base Stencil material with all the visual logic.*
 - **PP_StencilOutlineMaterial_MIC**
@@ -32,4 +33,3 @@ Ark Survival Evolved Mod Assets for adding a custom stencil outline to a target 
   - *CCA in Singletons array.* 
 - **TestMapArea_ActorOutline** 
   - *Test map to run the example in PIE.* 
- 

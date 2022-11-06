@@ -1,19 +1,34 @@
 # ActorOutline
 Ark Survival Evolved Mod Assets for adding a custom stencil outline to a target actor. Such as a dino.
 
+## Setup
+1. Download the source
+2. Place the `ActorOutline` folder in your kit's `/Mods` folder (file explorer, outside the kit)
+3. Path in kit to assets listed below should be: `/Game/Mods/ActorOutline`
+4. Open `TestMapArea_ActorOutline` 
+5. Click PIE button
+6. Spawn Dinos & Structures
+7. Look at them, see stencil outline on them
+
 ## Assets
 - **Buff_ActorOutline**
   - *Player buff that enables/disables the stencil.*
+  - *Setup to stencil whatever the player is looking at.*
+  - *Changed this from what the example did before, left old logic disconnected in BuffClientTick.* 
 - **PP_StencilOutlineMaterial**
-  - *Stencil material with all of the graph logic.*
+  - *Base Stencil material with all the visual logic.*
 - **PP_StencilOutlineMaterial_MIC**
   - *Material instance referenced by the buff (and your PGD), edit parameters here.*
+  
+## PIE Things
+- **ActorOutline_CCA**
+  - *Used so buff applies to player right away in PIE.*
+  - *Template used from: [ArkTemplates Open Source](https://github.com/Kozenomenon/ArkTemplates)*
+- **PrimalGameData_BP_ActorOutline** 
+  - *Test Harness to run the example in PIE.* 
+  - *PP MIC in AdditionalBuffPostProcessEffects array.* 
+  - *Buff in AdditionalDefaultBuffs array.* 
+  - *CCA in Singletons array.* 
+- **TestMapArea_ActorOutline** 
+  - *Test map to run the example in PIE.* 
  
-## Setup
-1. Download this source
-2. [Unblock](https://lmgtfy.com/?q=unblock+windows+file) the .asset files in Windows File Explorer
-3. Place assets in your mod folder *(best if ADK is closed when you do this)*
-4. Open your mod PGD and add 'PP_StencilOutlineMaterial_MIC' to the 'Additional Buff Post Process Effects' array 
-5. Implement the means within your mod to 'Static Add Buff' on the Player referencing the 'Buff_ActorOutline' 
-   - *The desired stencil target needs to be set as 'Damage Causer' when you do this.*
-6. Deactivate the buff to remove the stencil from display. 

@@ -1,5 +1,6 @@
 # ActorOutline
 Ark Survival Evolved Mod Assets for adding a custom stencil outline to a target actor. Such as a dino.
+![ActorOutline](/Images/ActorOutline_Example.png)
 
 ## Setup
 1. Download the source

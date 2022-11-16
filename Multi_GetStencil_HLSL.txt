@@ -1,0 +1,113 @@
+{
+
+#if FEATURE_LEVEL >= FEATURE_LEVEL_SM4 && TRUE_MAT_PP
+
+// the desired width for actor outline along border
+int width = (int)max(1,OutlineWidth);
+
+// init values for current pixel 
+int2 CenterIntUV = (int2)trunc(ScreenUV * PostprocessInput0Size.xy);
+float ClosestDepth = ConvertFromDeviceZ(Texture2DSampleLevel(CustomDepthTexture, CustomDepthTextureSampler, ScreenUV, 0).r);
+float FoundStencil = CustomStencilTexture.Load(int3(CenterIntUV, 0)).g * (1.0 / 255.0);
+// the stencil at the actual current pixel 
+// this value is divided by 255f 
+float CenterStencil = FoundStencil;
+
+// init other vars for controlling the thickness of border to draw 
+float MaxWeight = length(float2(width,width));
+float TotalWeight = 0;
+float WeightOfNothing = 0;
+float MaxWeightAccum = 0.0f;
+
+// =========================================================
+// loop over matrix square around current pixel 
+// this will be based on "OutlineWidth" supplied
+// WC hardcodes this to '3' 
+// this is done to determine if we are on the edge 
+// of the actor, e.q. the border along which to draw outline 
+// =========================================================
+// much of the logic in this loop is a lil moot given that 
+// if stencil does not "match" we will short-circuit and return 0,0,0 
+// but i left it in here in case you want to modify for other purposes 
+for(int x=(-1*width);x<=width;x++)
+{
+	for(int y=(1*width);y<=width;y++)
+	{
+		// skip calc on central pixel, because that is the current pixel we did above 
+		if(x==0 && y==0)
+		{
+			continue;
+		}
+		// get UV for nearby pixel along matrix 
+		int2 IntUV = (int2)trunc(ScreenUV * PostprocessInput0Size.xy) + int2(x,y);
+		// init values for nearby pixel 
+		float CurrentDepth = ConvertFromDeviceZ(Texture2DSampleLevel(CustomDepthTexture, CustomDepthTextureSampler, ScreenUV  + float2(x,y) * PostprocessInput0Size.zw, 0).r);
+		// stencil at this matrix pixel, divided by 255 like done for central pixel above 
+		float CustomStencil = CustomStencilTexture.Load(int3(IntUV, 0)).g * (1.0 / 255.0);
+		// calc weight for this pixel 
+		float CurWeight = (MaxWeight - length(float2(x,y))) / MaxWeight + 0.2f;
+		// accumulate the weight 
+		MaxWeightAccum += CurWeight;
+
+		// if not a stencil pixel we accumulate weight separately
+		if(CustomStencil == 0)
+		{
+			WeightOfNothing += CurWeight;
+		}
+
+		// if a stencil pixel AND either... 
+		//  - stencil is same as central pixel OR 
+		//  - this pixel is closer to viewport than any pixel checked prior 
+		// so this is like.. finding the edge... i guess :)		
+		if (CustomStencil != 0 && 
+		   ( FoundStencil == CustomStencil || CurrentDepth<ClosestDepth ))
+		{
+			// but if its not the same stencil as last noted...
+			if(FoundStencil != CustomStencil)
+			{
+				// wipe out the total weight 
+				TotalWeight = 0.0f;
+			}
+			// either way, track values as we go 
+			FoundStencil = CustomStencil;
+			ClosestDepth = CurrentDepth;
+			// total wgt becomes max of either itself or this pixel's weight
+			TotalWeight = max(TotalWeight, CurWeight);
+		}
+
+	}
+}
+
+// if center pixel had stencil and it remained the same through the matrix 
+if(CenterStencil != 0 && CenterStencil == FoundStencil)
+{
+	// then weight will be not-stencil pixel wgt / stencil pixel wgt 
+	TotalWeight = (WeightOfNothing / MaxWeightAccum);
+}
+// otherwise, if center pixel stencil matches stencil throughout matrix 
+// i guess? not sure i get why they do this.. 
+else	
+if(CenterStencil == FoundStencil)
+{
+	// wipe out weight and stencil, i guess lol
+	FoundStencil = 0;
+	TotalWeight = 0.0f;
+}
+
+// anyway, here we put stencil back to 255 value 
+int TrueStencil = int(FoundStencil * 255.9999f);
+if (TrueStencil == 0)
+{
+	TotalWeight = 0.0f;
+	ClosestDepth = 0.0f;
+}
+// return float3 containing the 3 values calculated above 
+// - TrueStencil :: Stencil found either central pixel or any along matrix nearby, for pixel w/ closest depth
+// - ClosestDepth :: the depth value nearest to viewport for current pixel or any along matrix 
+// - TotalWeight :: calculated based on how many pixels along matrix had matching stencil 
+return float3((float)TrueStencil,ClosestDepth, TotalWeight);
+#else
+// default return nada 0,0,0 if PP features not available here
+return float3(0.0f,0.0f,0.0f);
+#endif
+}
